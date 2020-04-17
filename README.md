@@ -39,3 +39,4 @@ For a full tutorial on building from Windows, see this video: [Ionic 4 Build App
 ## Further help
 
 To get more help on the Ionic CLI use `ionic help` or go check out the [Official Ionic Guide](https://ionicframework.com/docs/building/starting).
+# ionic-inappbrowser-filedownload
