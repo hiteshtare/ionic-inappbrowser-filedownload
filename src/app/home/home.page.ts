@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx'
 
@@ -15,13 +15,35 @@ export class HomePage {
     options: any
   };
 
-  constructor(private iab: InAppBrowser, private window: Window, private transfer: FileTransfer, private file: File) {
-    const url = "http://www.principlesofeconometrics.com/excel.htm";
-    let windowref = this.window.open(url, '_blank', 'location=no,closebuttoncaption=Cerrar,toolbar=yes,enableViewportScale=yes');
+  public iabObj: InAppBrowserObject;
+  public windowref = null;
+  public url = "http://www.principlesofeconometrics.com/excel.htm";
+  // public url = "https://analytics.qa1.labs.global.omnipresence.io/";
 
-    if (windowref == null)
+  constructor(private iab: InAppBrowser, private window: Window, private transfer: FileTransfer, private file: File) {
+    this.windowref = this.window.open(this.url, '_blank', 'location=no,closebuttoncaption=Cerrar,toolbar=yes,enableViewportScale=yes');
+    // public windowref = this.window.open("https://analytics.qa1.labs.global.omnipresence.io/", '_blank', 'location=no,closebuttoncaption=Cerrar,toolbar=yes,enableViewportScale=yes');
+    // this.iabObj = this.iab.create(`https://analytics.qa1.labs.global.omnipresence.io/`, `_blank`);
+
+    if (this.windowref == null)
       return;
-    windowref.addEventListener('loadstart', (e) => {
+
+    //+++++++++++++++ Add an event listener for customExport +++++++++++++++//
+    document.addEventListener("customExport", (event) => {
+      alert(`document: customExport is triggered!`);
+      console.log(`document: customExport is triggered!`);
+      console.debug(event);
+    });
+
+    this.windowref.addEventListener('customExport', (event) => {
+      alert(`windowref: customExport is triggered!`);
+      console.log(`windowref: customExport is triggered!`);
+      console.debug(event);
+    });
+    //+++++++++++++++ Add an event listener for customExport +++++++++++++++//
+
+    this.windowref.addEventListener('loadstart', (e) => {
+
       var url = e['url'];
       alert(`Event: loadstart with URL = ${url}`);
 
@@ -36,7 +58,7 @@ export class HomePage {
           targetPath: targetPath,
           options: options
         };
-        windowref.close(); // close window or you get exception
+        this.windowref.close(); // close window or you get exception
         document.addEventListener('deviceready', () => {
           alert(`Event: deviceready executed`);
 
@@ -61,6 +83,8 @@ export class HomePage {
   }
 
   openBlank() {
-    this.iab.create(`http://www.principlesofeconometrics.com/excel.htm`, `_system`);
+    const iabObj = this.iab.create(this.url, '_blank').on('loadstart').subscribe(() => {
+      alert(`iab: customExport is triggered!`);
+    });
   }
 }
